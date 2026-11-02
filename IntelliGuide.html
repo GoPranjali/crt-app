@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IntelliGuide – Your smart study buddy</title>
+<style>
+:root{--ink:#2a1f55;--mut:#6f66a0;--p:#7c4dff;--pk:#ff4f8b;--yl:#ffc53d;--gn:#18c08f;--bl:#37a9ff;--card:#fff;--bd:#eadffd}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;color:var(--ink);line-height:1.5;min-height:100vh;
+background:radial-gradient(circle at 10% 0,#ffe3f0 0,transparent 40%),radial-gradient(circle at 95% 10%,#dff0ff 0,transparent 40%),radial-gradient(circle at 50% 100%,#fff2c9 0,transparent 45%),#fff8f0}
+.w{max-width:960px;margin:0 auto;padding:20px}
+.hero{background:linear-gradient(120deg,var(--p),var(--pk) 60%,var(--yl));color:#fff;border-radius:28px;padding:26px;position:relative;overflow:hidden;box-shadow:0 12px 30px #7c4dff40}
+.hero:before,.hero:after{content:"";position:absolute;border-radius:50%;background:#ffffff26}
+.hero:before{width:180px;height:180px;right:-40px;top:-60px}.hero:after{width:110px;height:110px;right:120px;bottom:-50px}
+.hero h1{margin:0;font-size:2.2rem}.hero p{margin:6px 0 0;opacity:.95}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.gear{background:#ffffff33;border:0;color:#fff;border-radius:12px;padding:8px 12px;cursor:pointer;font:inherit;font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0}
+.stat{background:var(--card);border:2px solid var(--bd);border-radius:20px;padding:12px;text-align:center;animation:pop .5s both}
+.stat b{display:block;font-size:1.6rem}.stat small{color:var(--mut)}
+.bar{height:12px;background:#eee4ff;border-radius:99px;overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gn),var(--bl));transition:width .6s}
+nav{display:flex;gap:10px;margin:8px 0 16px;flex-wrap:wrap}
+nav button{flex:1;min-width:120px;border:2px solid var(--bd);background:var(--card);color:var(--ink);border-radius:16px;padding:12px;font:inherit;font-weight:700;cursor:pointer;transition:.2s}
+nav button:hover{transform:translateY(-2px)}nav button.on{background:var(--p);border-color:var(--p);color:#fff;box-shadow:0 6px 16px #7c4dff55}
+.card{background:var(--card);border:2px solid var(--bd);border-radius:24px;padding:20px;margin-bottom:16px;animation:pop .4s both}
+@keyframes pop{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+textarea,input,select{width:100%;font:inherit;color:var(--ink);background:#fbf8ff;border:2px solid var(--bd);border-radius:14px;padding:11px;margin:8px 0}
+.btn{border:0;border-radius:14px;padding:12px 20px;font:inherit;font-weight:700;color:#fff;cursor:pointer;background:linear-gradient(90deg,var(--p),var(--pk));box-shadow:0 6px 14px #ff4f8b40}
+.btn:disabled{opacity:.5}
+.chip{display:inline-block;margin:4px 6px 4px 0;padding:6px 12px;border-radius:99px;background:#f1e9ff;border:2px solid var(--bd);cursor:pointer;font-size:.9rem}
+.chip:hover{background:var(--yl)}
+.step{display:flex;gap:12px;margin:10px 0;padding:12px;border-radius:16px;background:#f7f2ff;animation:pop .4s both}
+.step .n{flex:none;width:30px;height:30px;border-radius:50%;background:var(--p);color:#fff;display:grid;place-items:center;font-weight:700}
+.step.fin{background:#e5fbf3}.step.fin .n{background:var(--gn)}
+.opt{display:block;width:100%;text-align:left;margin:8px 0;padding:12px 14px;border-radius:14px;border:2px solid var(--bd);background:#fbf8ff;color:var(--ink);font:inherit;cursor:pointer}
+.opt:hover{border-color:var(--p)}.opt.ok{background:var(--gn);border-color:var(--gn);color:#fff}.opt.no{background:var(--pk);border-color:var(--pk);color:#fff}
+.row{display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;margin:8px 0;background:#faf6ff;border:2px solid transparent}
+.row.me{border-color:var(--p);background:#f0e8ff}
+.av{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-size:1.4rem;background:var(--yl)}
+.row .nm{flex:1;font-weight:700}.row small{display:block;font-weight:400;color:var(--mut)}
+.rk{width:34px;font-size:1.3rem;text-align:center}
+.mut{color:var(--mut);font-size:.9rem}
+.badges span{display:inline-block;margin:4px;padding:6px 12px;border-radius:99px;background:#fff3cf;border:2px solid var(--yl);font-size:.9rem}
+.badges span.lock{filter:grayscale(1);opacity:.5}
+.modal{position:fixed;inset:0;background:#2a1f55cc;display:grid;place-items:center;padding:16px;z-index:9}
+.modal .card{max-width:420px;width:100%}
+[hidden]{display:none!important}
+@media(max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}}
+</style></head><body><div class="w">
+
+<div class="hero"><div class="top"><div><h1>🧠 IntelliGuide</h1><p id="hi">Your smart study buddy</p></div>
+<button class="gear" id="gear">⚙️ Settings</button></div></div>
+
+<div class="stats">
+<div class="stat"><b id="sP">0</b><small>⭐ Points</small></div>
+<div class="stat"><b id="sS">0</b><small>🔥 Day streak</small></div>
+<div class="stat"><b id="sL">1</b><small>🎚️ Level (1-5)</small></div>
+<div class="stat"><b id="sA">0%</b><small>🎯 Accuracy</small><div class="bar"><i id="bA"></i></div></div></div>
+
+<nav id="nav"><button data-t="ask" class="on">💬 Ask a doubt</button><button data-t="quiz">🎯 Quiz</button><button data-t="rank">🏆 Leaderboard</button></nav>
+
+<section id="ask" class="card"><h2 style="margin-top:0">Solve any doubt, step by step</h2>
+<div id="ex"></div>
+<textarea id="q" rows="3" placeholder="Type your question..."></textarea>
+<button class="btn" id="go">✨ Solve it</button>
+<div id="ans" style="margin-top:14px"></div></section>
+
+<section id="quiz" class="card" hidden><h2 style="margin-top:0">Adaptive quiz</h2>
+<p class="mut">Right answers push the difficulty up. Misses ease it down, so it always fits you.</p>
+<div id="tp"></div>
+<div id="qa" style="margin-top:12px"></div></section>
+
+<section id="rank" class="card" hidden><h2 style="margin-top:0">🏆 Leaderboard</h2><div id="board"></div>
+<h3>Badges</h3><div class="badges" id="bd"></div></section>
+</div>
+
+<div class="modal" id="ob" hidden><div class="card"><h2 style="margin-top:0">Welcome! 👋</h2>
+<p class="mut">Tell us a little so IntelliGuide can fit you.</p>
+<input id="nm" placeholder="Your name"><select id="br"><option>Computer Science</option><option>Electrical</option><option>Mechanical</option><option>Civil</option><option>Physics / Maths</option></select>
+<select id="yr"><option>1st year</option><option>2nd year</option><option>3rd year</option><option>4th year</option></select>
+<button class="btn" id="st">Let's go 🚀</button></div></div>
+
+<div class="modal" id="se" hidden><div class="card"><h2 style="margin-top:0">⚙️ AI settings</h2>
+<p class="mut">The site works offline with built-in questions. For real AI answers to any question, paste your Anthropic API key. It stays in this browser only.</p>
+<input id="key" type="password" placeholder="sk-ant-..."><button class="btn" id="sv">Save</button> <button class="chip" id="cl">Close</button></div></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const SEED=[{n:"Priya S.",e:"🦊",p:1585,s:18},{n:"Aarav M.",e:"🐼",p:1240,s:12},{n:"Rohan K.",e:"🦁",p:960,s:5}];
+let S={name:"",br:"",yr:"",pts:0,streak:0,last:"",lvl:1,ok:0,tot:0,key:""};
+try{Object.assign(S,JSON.parse(localStorage.getItem("ig2")||"{}"))}catch(e){}
+const save=()=>{try{localStorage.setItem("ig2",JSON.stringify(S))}catch(e){}};
+const day=d=>new Date(d).toISOString().slice(0,10);
+function streak(){const t=day(Date.now());if(S.last===t)return;S.streak=S.last===day(Date.now()-864e5)?S.streak+1:1;S.last=t;S.pts+=5*Math.min(S.streak,7)}
+function paint(){$("hi").textContent=S.name?`Hi ${S.name}! Ready to level up your ${S.br||"studies"}? 💪`:"Your smart study buddy";
+$("sP").textContent=S.pts;$("sS").textContent=S.streak;$("sL").textContent=S.lvl;
+const a=S.tot?Math.round(S.ok/S.tot*100):0;$("sA").textContent=a+"%";$("bA").style.width=a+"%";board();badges()}
+function board(){const all=SEED.concat([{n:(S.name||"You")+" (you)",e:"⭐",p:S.pts,s:S.streak,me:1}]).sort((a,b)=>b.p-a.p);
+const b=$("board");b.textContent="";all.forEach((r,i)=>{const d=document.createElement("div");d.className="row"+(r.me?" me":"");
+const rk=document.createElement("div");rk.className="rk";rk.textContent=["🥇","🥈","🥉"][i]||i+1;
+const av=document.createElement("div");av.className="av";av.textContent=r.e;
+const nm=document.createElement("div");nm.className="nm";nm.textContent=r.n;const sm=document.createElement("small");sm.textContent="🔥 "+r.s+" day streak";nm.append(sm);
+const pt=document.createElement("b");pt.textContent="⭐ "+r.p;d.append(rk,av,nm,pt);b.append(d)})}
+function badges(){const L=[["🌱 First step",S.tot>=1],["🔥 3-day streak",S.streak>=3],["🎯 10 correct",S.ok>=10],["🚀 Level 4",S.lvl>=4],["💎 500 points",S.pts>=500]];
+$("bd").textContent="";L.forEach(([t,u])=>{const s=document.createElement("span");s.textContent=t;if(!u)s.className="lock";$("bd").append(s)})}
+$("nav").onclick=e=>{const t=e.target.dataset.t;if(!t)return;[...$("nav").children].forEach(b=>b.classList.toggle("on",b.dataset.t===t));["ask","quiz","rank"].forEach(s=>$(s).hidden=s!==t)};
+
+/* ---------- AI (optional) ---------- */
+async function ai(prompt){const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"content-type":"application/json","x-api-key":S.key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+body:JSON.stringify({model:"claude-sonnet-5-5",max_tokens:1500,messages:[{role:"user",content:prompt}]})});
+if(!r.ok)throw new Error("API "+r.status);const j=await r.json();return j.content.map(c=>c.text||"").join("")}
+
+/* ---------- Doubt solver ---------- */
+const DEMO={
+pendulum:["Small oscillations: restoring force is -mg sinθ ≈ -mgθ, since sinθ ≈ θ for small angles.","Newton's law along the arc: m L θ'' = -mgθ, so θ'' + (g/L)θ = 0.","This is simple harmonic motion with ω² = g/L.","T = 2π/ω = 2π√(L/g)."],
+derivative:["Rewrite using the power rule: d/dx xⁿ = n·xⁿ⁻¹.","For f(x) = 3x² + 5x, differentiate each term: 6x + 5.","Check: at x = 1, slope = 11.","f′(x) = 6x + 5."],
+ohm:["Ohm's law: V = I·R.","Series resistors add: R = 2 + 3 = 5 Ω.","Current I = V/R = 10/5 = 2 A.","I = 2 A."],
+binary:["Binary search needs a sorted array. Keep low=0, high=n-1.","Compare the middle element with the target and discard half of the array.","Each step halves the search space: n → n/2 → n/4 … → 1.","Steps needed k satisfy 2ᵏ = n, so the time is O(log n)."]};
+const EX=[["Time period of a pendulum","pendulum"],["Differentiate 3x² + 5x","derivative"],["Current with 2Ω and 3Ω in series on 10V","ohm"],["Why is binary search O(log n)?","binary"]];
+EX.forEach(([t,k])=>{const c=document.createElement("span");c.className="chip";c.textContent="💡 "+t;c.onclick=()=>{$("q").value=t;solve(k)};$("ex").append(c)});
+function steps(list){$("ans").textContent="";list.forEach((t,i)=>{const s=document.createElement("div");const fin=i===list.length-1;s.className="step"+(fin?" fin":"");s.style.animationDelay=i*.12+"s";
+const n=document.createElement("div");n.className="n";n.textContent=fin?"✓":i+1;const x=document.createElement("div");x.textContent=(fin?"Answer: ":"")+t;s.append(n,x);$("ans").append(s)})}
+async function solve(k){const q=$("q").value.trim();if(!q)return;streak();S.pts+=2;
+if(S.key){$("go").disabled=true;$("ans").textContent="🤔 Thinking...";
+try{const t=await ai("You are IntelliGuide, a friendly tutor for university engineering and science students. Solve step by step. Reply with one step per line, no numbering, no markdown; the last line is the final answer.\n\nQuestion: "+q);steps(t.split("\n").map(x=>x.trim()).filter(Boolean))}
+catch(e){$("ans").textContent="Couldn't reach the AI ("+e.message+"). Check your API key in Settings."}
+$("go").disabled=false}
+else{const key=k||Object.keys(DEMO).find(w=>q.toLowerCase().includes(w));
+if(key&&DEMO[key])steps(DEMO[key]);else{$("ans").textContent="Offline mode only knows the 4 example doubts. Open ⚙️ Settings and add an API key to solve any question."}}
+save();paint()}
+$("go").onclick=()=>solve();
+
+/* ---------- Quiz ---------- */
+const BANK={
+"Physics":[["Unit of force?",["Joule","Newton","Watt","Pascal"],1,"F = ma, measured in newtons.",1],["Speed of light is about?",["3×10⁸ m/s","3×10⁶ m/s","3×10⁵ m/s","3×10¹⁰ m/s"],0,"c ≈ 3×10⁸ m/s.",1],["Kinetic energy formula?",["mv","½mv²","mgh","m/v²"],1,"KE = ½mv².",2],["Escape velocity depends on?",["Mass of object","Mass and radius of planet","Only gravity at surface","Object shape"],1,"v = √(2GM/R).",3],["For SHM, acceleration is proportional to?",["Velocity","−Displacement","Time","Amplitude²"],1,"a = −ω²x.",3],["Heisenberg's principle limits?",["Energy only","Position and momentum together","Charge","Mass"],1,"Δx·Δp ≥ ħ/2.",5]],
+"Maths":[["d/dx of x²?",["x","2x","x²","2"],1,"Power rule.",1],["∫ 2x dx =?",["x²+C","2x²","x+C","2+C"],0,"Reverse power rule.",2],["Determinant of identity 2×2?",["0","1","2","−1"],1,"Product of the diagonal is 1.",2],["lim x→0 sin x / x =?",["0","∞","1","Undefined"],2,"Standard limit.",3],["Eigenvalues of [[2,0],[0,3]]?",["2 and 3","5","6","0"],0,"Diagonal entries.",3],["Series Σ 1/n² converges to?",["∞","π²/6","1","e"],1,"Basel problem.",5]],
+"Computer Science":[["Binary of decimal 5?",["100","101","110","111"],1,"4+1 = 5.",1],["Stack follows?",["FIFO","LIFO","Random","Priority"],1,"Last in, first out.",1],["Binary search time?",["O(n)","O(n²)","O(log n)","O(1)"],2,"Halves each step.",2],["Worst case of quicksort?",["O(n log n)","O(n)","O(n²)","O(log n)"],2,"Bad pivots.",3],["Which is NP-complete?",["Sorting","SAT","Binary search","BFS"],1,"Cook–Levin theorem.",4],["Halting problem is?",["Solvable in O(n)","Undecidable","NP-hard only","Regular"],1,"Turing 1936.",5]],
+"Electrical":[["Unit of resistance?",["Volt","Ohm","Farad","Henry"],1,"Ohm (Ω).",1],["Series resistors 4Ω+6Ω?",["2Ω","10Ω","24Ω","5Ω"],1,"They add.",2],["Capacitor stores?",["Charge","Current","Flux only","Heat"],0,"Q = CV.",2],["Time constant of RC?",["R/C","RC","C/R","1/RC"],1,"τ = RC.",3],["Power factor of pure inductor?",["1","0.5","0","−1"],2,"Phase is 90°.",4]]};
+let Q=[],qi=0,sc=0;
+Object.keys(BANK).forEach(t=>{const c=document.createElement("span");c.className="chip";c.textContent="📚 "+t;c.onclick=()=>start(t);$("tp").append(c)});
+async function start(t){$("qa").textContent="Preparing...";let pool=null;
+if(S.key){try{const r=await ai(`Make 5 multiple-choice questions on "${t}" for a university student at difficulty ${S.lvl} of 5. Reply with ONLY a JSON array: [{"q":"","o":["","","",""],"a":0,"why":""}] where a is the correct option index.`);
+pool=JSON.parse(r.slice(r.indexOf("["),r.lastIndexOf("]")+1)).map(x=>[x.q,x.o,x.a,x.why,S.lvl])}catch(e){pool=null}}
+if(!pool){pool=BANK[t].slice();Q=[];for(let i=0;i<Math.min(5,pool.length);i++){const L=S.lvl;pool.sort((a,b)=>Math.abs(a[4]-L)-Math.abs(b[4]-L)+(Math.random()-.5));Q.push(pool.shift())}}else Q=pool;
+qi=0;sc=0;show()}
+function show(){const box=$("qa");box.textContent="";
+if(qi>=Q.length){const d=document.createElement("h3");d.textContent=`🎉 ${sc}/${Q.length} correct! You are now level ${S.lvl}.`;box.append(d);return}
+const c=Q[qi],h=document.createElement("h3");h.textContent=`Q${qi+1}. ${c[0]}`;box.append(h);let done=0;const btns=[];
+c[1].forEach((o,i)=>{const b=document.createElement("button");b.className="opt";b.textContent=o;btns.push(b);
+b.onclick=()=>{if(done)return;done=1;const ok=i===c[2];b.classList.add(ok?"ok":"no");btns[c[2]].classList.add("ok");streak();S.tot++;
+if(ok){sc++;S.ok++;S.pts+=10*c[4];S.lvl=Math.min(5,S.lvl+(S.ok%2?0:1))}else S.lvl=Math.max(1,S.lvl-1);
+save();paint();const e=document.createElement("p");e.textContent=(ok?"✅ Correct! ":"❌ Not quite. ")+(c[3]||"");
+const n=document.createElement("button");n.className="btn";n.textContent=qi+1<Q.length?"Next ➜":"Finish 🏁";n.onclick=()=>{qi++;show()};box.append(e,n)};box.append(b)})}
+
+/* ---------- onboarding & settings ---------- */
+$("st").onclick=()=>{S.name=$("nm").value.trim().slice(0,20)||"Friend";S.br=$("br").value;S.yr=$("yr").value;save();$("ob").hidden=true;paint()};
+$("gear").onclick=()=>{$("key").value=S.key;$("se").hidden=false};
+$("sv").onclick=()=>{S.key=$("key").value.trim();save();$("se").hidden=true};$("cl").onclick=()=>$("se").hidden=true;
+if(!S.name)$("ob").hidden=false;
+paint();
+</script></body></html>
